@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analysis History</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styleindex.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #111827;
+      }
+    </style>
+  </head>
+  <body class="h-12">
+    <div class="flex flex-col min-h-screen">
+      <header><%- include('./partials/nav') %></header>
+
+      <main class="flex-grow">
+        <div class="max-w-5xl mx-auto py-2 px-4 sm:px-6 lg:px-8"></div>
+        <div class="max-w-5xl mx-auto py-32 px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-500">Analysis History</h1>
+            <% if (history && history.length > 0) { %>
+            <span
+              class="text-sm text-gray-400 bg-gray-700 px-4 py-2 rounded-lg"
+            >
+              Page <%= currentPage %> of <%= totalPages %> (Total: <%=
+              totalCount %>)
+            </span>
+            <% } %>
+          </div>
+
+          <div class="bg-gray-800 shadow-lg rounded-xl overflow-hidden">
+            <% if (history && history.length > 0) { %>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-gray-700/50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Date & Time
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Analyzed URL
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                    >
+                      Result
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-700">
+                  <% history.forEach(item => { let statusClass = 'bg-gray-600
+                  text-gray-100'; let statusEmoji = '❓'; const resultText =
+                  item.result.toLowerCase(); if (resultText.includes('safe')) {
+                  statusClass = 'bg-green-500/20 text-green-400'; statusEmoji =
+                  '✅'; } else if (resultText.includes('suspicious')) {
+                  statusClass = 'bg-yellow-500/20 text-yellow-400'; statusEmoji
+                  = '⚠️'; } else if (resultText.includes('phishing') ||
+                  resultText.includes('malicious')) { statusClass =
+                  'bg-red-500/20 text-red-400'; statusEmoji = '🚨'; } %>
+                  <tr
+                    class="hover:bg-gray-700/50 transition-colors duration-150"
+                  >
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"
+                    >
+                      <%= new Date(item.timestamp).toLocaleString() %>
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 max-w-md truncate"
+                    >
+                      <a
+                        href="<%= item.url %>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="hover:text-blue-400 hover:underline"
+                        title="<%= item.url %>"
+                      >
+                        <%= item.url %>
+                      </a>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= statusClass %>"
+                      >
+                        <span class="mr-2"><%= statusEmoji %></span>
+                        <%= item.result %>
+                      </span>
+                    </td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+            <% } else { %>
+            <div class="text-center py-12">
+              <svg
+                class="mx-auto h-12 w-12 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                />
+              </svg>
+              <h3 class="mt-2 text-lg font-medium text-white">No History</h3>
+              <p class="mt-1 text-sm text-gray-400">
+                You have not analyzed any URLs yet.
+              </p>
+              <div class="mt-6">
+                <a
+                  href="/"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500"
+                >
+                  Analyze a URL
+                </a>
+              </div>
+            </div>
+            <% } %>
+
+            <!-- Pagination Controls -->
+            <% if (history && history.length > 0) { %>
+            <div class="bg-gray-700/50 px-6 py-4 border-t border-gray-700">
+              <!-- Page Info -->
+              <div class="mb-4 text-sm text-gray-300 text-center">
+                <span class="font-semibold"
+                  >Page <%= currentPage %> of <%= totalPages %></span
+                >
+                <span class="mx-2">•</span>
+                <span
+                  >Showing <%= history.length %> of <%= totalCount %> total
+                  records</span
+                >
+              </div>
+
+              <!-- Navigation Buttons -->
+              <div class="flex items-center justify-between gap-4">
+                <% if (hasPrevPage) { %>
+                <a
+                  href="?page=1"
+                  class="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md shadow-sm text-xs font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors"
+                  title="Go to first page"
+                >
+                  ⏮ First
+                </a>
+                <a
+                  href="?page=<%= currentPage - 1 %>"
+                  class="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors"
+                >
+                  ← Previous
+                </a>
+                <% } else { %>
+                <button
+                  disabled
+                  class="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md shadow-sm text-xs font-medium text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed"
+                >
+                  ⏮ First
+                </button>
+                <button
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed"
+                >
+                  ← Previous
+                </button>
+                <% } %>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center gap-2">
+                  <% let startPage = Math.max(1, currentPage - 2); let endPage =
+                  Math.min(totalPages, currentPage + 2); %> <% if (startPage >
+                  1) { %>
+                  <a
+                    href="?page=1"
+                    class="px-3 py-2 border border-gray-600 rounded-md text-sm text-gray-300 bg-gray-800 hover:bg-gray-700"
+                    >1</a
+                  >
+                  <% if (startPage > 2) { %>
+                  <span class="text-gray-500">...</span>
+                  <% } %> <% } %> <% for (let i = startPage; i <= endPage; i++)
+                  { %> <% if (i === currentPage) { %>
+                  <button
+                    class="px-3 py-2 border-2 border-blue-500 rounded-md text-sm font-semibold text-blue-400 bg-gray-800"
+                  >
+                    <%= i %>
+                  </button>
+                  <% } else { %>
+                  <a
+                    href="?page=<%= i %>"
+                    class="px-3 py-2 border border-gray-600 rounded-md text-sm text-gray-300 bg-gray-800 hover:bg-gray-700"
+                  >
+                    <%= i %>
+                  </a>
+                  <% } %> <% } %> <% if (endPage < totalPages) { %> <% if
+                  (endPage < totalPages - 1) { %>
+                  <span class="text-gray-500">...</span>
+                  <% } %>
+                  <a
+                    href="?page=<%= totalPages %>"
+                    class="px-3 py-2 border border-gray-600 rounded-md text-sm text-gray-300 bg-gray-800 hover:bg-gray-700"
+                  >
+                    <%= totalPages %>
+                  </a>
+                  <% } %>
+                </div>
+
+                <% if (hasNextPage) { %>
+                <a
+                  href="?page=<%= currentPage + 1 %>"
+                  class="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors"
+                >
+                  Next →
+                </a>
+                <a
+                  href="?page=<%= totalPages %>"
+                  class="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md shadow-sm text-xs font-medium text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors"
+                  title="Go to last page"
+                >
+                  Last ⏭
+                </a>
+                <% } else { %>
+                <button
+                  disabled
+                  class="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed"
+                >
+                  Next →
+                </button>
+                <button
+                  disabled
+                  class="inline-flex items-center px-3 py-2 border border-gray-600 rounded-md shadow-sm text-xs font-medium text-gray-500 bg-gray-800 opacity-50 cursor-not-allowed"
+                >
+                  Last ⏭
+                </button>
+                <% } %>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </main>
+
+      <%- include('./partials/footer') %>
+    </div>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

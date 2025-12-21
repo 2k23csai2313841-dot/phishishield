@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhishShield - Secure Login</title>
+    <link rel="stylesheet" href="/style2.css" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Animated background */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle at 20% 50%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .login_and_register_logo {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+      }
+
+      .logo {
+        height: 50px;
+        width: auto;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+      }
+
+      .auth-container {
+        width: 100%;
+        max-width: 450px;
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .auth-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 50px 40px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .form h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 12px;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .form > p:not(.forgot-password) {
+        text-align: center;
+        color: #718096;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f7fafc;
+        font-family: inherit;
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .input-group input::placeholder {
+        color: #a0aec0;
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 30px 0;
+      }
+
+      .login-btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .login-btn:active {
+        transform: translateY(0);
+      }
+
+      .login-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .forgot-password {
+        text-align: center;
+        color: #667eea;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .forgot-password:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .no-account {
+        text-align: center;
+        color: #718096;
+        font-size: 0.95rem;
+        margin-top: 20px;
+      }
+
+      .toggle-form {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+
+      .toggle-form:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .message_center_account {
+        margin-top: 20px;
+        text-align: center;
+        min-height: 24px;
+      }
+
+      .message_center_account p {
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message_center_account p.error {
+        background: rgba(245, 101, 101, 0.1);
+        color: #e53e3e;
+        border: 1px solid #fc8181;
+      }
+
+      .message_center_account p.success {
+        background: rgba(72, 187, 120, 0.1);
+        color: #22543d;
+        border: 1px solid #9ae6b4;
+      }
+
+      /* Toast notifications */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .toast {
+        background: white;
+        padding: 14px 20px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        animation: toastSlideIn 0.3s ease;
+      }
+
+      @keyframes toastSlideIn {
+        from {
+          opacity: 0;
+          transform: translateX(400px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes toastSlideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(400px);
+        }
+      }
+
+      .toast.removing {
+        animation: toastSlideOut 0.3s ease;
+      }
+
+      .toast.success {
+        background: #f0fdf4;
+        border-left: 4px solid #22c55e;
+      }
+
+      .toast.error {
+        background: #fef2f2;
+        border-left: 4px solid #ef4444;
+      }
+
+      .toast.success .toast-icon {
+        color: #22c55e;
+      }
+
+      .toast.error .toast-icon {
+        color: #ef4444;
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .toast-message {
+        color: #1f2937;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      @media (max-width: 480px) {
+        .auth-box {
+          padding: 35px 25px;
+        }
+
+        .form h1 {
+          font-size: 1.5rem;
+        }
+
+        .auth-container {
+          max-width: 100%;
+        }
+
+        .toast {
+          min-width: calc(100% - 40px);
+          right: 20px;
+          left: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login_and_register_logo">
+      <img class="logo" src="/image/logo.png" alt="logo" />
+    </div>
+
+    <div class="auth-container">
+      <div class="auth-box">
+        <div class="form login-form">
+          <h1>Welcome Back</h1>
+          <p>Secure access to PhishShield security analysis</p>
+          <form id="login-form" method="POST" action="/login">
+            <div class="input-group">
+              <input
+                type="email"
+                id="username"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div class="action-buttons">
+              <button type="submit" class="login-btn">Login</button>
+            </div>
+            <p class="forgot-password">Forgot password?</p>
+            <p class="no-account">
+              Don't have an account?
+              <a href="/register" class="toggle-form">Register now</a>
+            </p>
+            <div class="message_center_account">
+              <p id="login-message"></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+      // Toast notification system
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+
+        const icon = type === "success" ? "✓" : "✕";
+        toast.innerHTML = `
+          <span class="toast-icon">${icon}</span>
+          <span class="toast-message">${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add("removing");
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = e.target.email.value;
+          const password = e.target.password.value;
+          const loginBtn = e.target.querySelector(".login-btn");
+          const originalBtnText = loginBtn.textContent;
+
+          loginBtn.disabled = true;
+          loginBtn.textContent = "Logging in...";
+
+          try {
+            const res = await fetch("/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+            const messageEl = document.getElementById("login-message");
+
+            if (res.ok) {
+              messageEl.textContent = "✓ Login successful!";
+              messageEl.className = "success";
+              showToast("Login successful! Redirecting...", "success");
+
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 1500);
+            } else {
+              messageEl.textContent = data.error || "Login failed";
+              messageEl.className = "error";
+              showToast(data.error || "Login failed", "error");
+              loginBtn.disabled = false;
+              loginBtn.textContent = originalBtnText;
+            }
+          } catch (error) {
+            const messageEl = document.getElementById("login-message");
+            messageEl.textContent = "Network error. Please try again.";
+            messageEl.className = "error";
+            showToast("Network error", "error");
+            loginBtn.disabled = false;
+            loginBtn.textContent = originalBtnText;
+          }
+        });
+    </script>
+  </body>
+</html>
