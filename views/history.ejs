@@ -68,26 +68,33 @@
                   </tr>
                 </thead>
                 <tbody class="bg-gray-800 divide-y divide-gray-700">
-                  <% history.forEach(item => { let statusClass = 'bg-gray-600
-                  text-gray-100'; let statusEmoji = '❓'; const resultText =
-                  item.result.toLowerCase(); if (resultText.includes('safe')) {
-                  statusClass = 'bg-green-500/20 text-green-400'; statusEmoji =
-                  '✅'; } else if (resultText.includes('suspicious')) {
-                  statusClass = 'bg-yellow-500/20 text-yellow-400'; statusEmoji
-                  = '⚠️'; } else if (resultText.includes('phishing') ||
-                  resultText.includes('malicious')) { statusClass =
-                  'bg-red-500/20 text-red-400'; statusEmoji = '🚨'; } %>
-                  <tr
-                    class="hover:bg-gray-700/50 transition-colors duration-150"
-                  >
-                    <td
-                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"
-                    >
+                <% history.forEach(item => { %>
+                  <%
+                    let statusClass = 'bg-gray-600 text-gray-100';
+                    let statusEmoji = '❓';
+                    const resultText = item.result.toLowerCase();
+
+                    if (resultText.includes('safe')) {
+                      statusClass = 'bg-green-500/20 text-green-400';
+                      statusEmoji = '✅';
+                    } else if (resultText.includes('suspicious')) {
+                      statusClass = 'bg-yellow-500/20 text-yellow-400';
+                      statusEmoji = '⚠️';
+                    } else if (
+                      resultText.includes('phishing') ||
+                      resultText.includes('malicious')
+                    ) {
+                      statusClass = 'bg-red-500/20 text-red-400';
+                      statusEmoji = '🚨';
+                    }
+                  %>
+
+                  <tr class="hover:bg-gray-700/50 transition-colors duration-150">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                       <%= new Date(item.timestamp).toLocaleString() %>
                     </td>
-                    <td
-                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 max-w-md truncate"
-                    >
+
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 max-w-md truncate">
                       <a
                         href="<%= item.url %>"
                         target="_blank"
@@ -98,6 +105,7 @@
                         <%= item.url %>
                       </a>
                     </td>
+
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span
                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= statusClass %>"
@@ -107,8 +115,9 @@
                       </span>
                     </td>
                   </tr>
-                  <% }); %>
-                </tbody>
+                <% }); %>
+              </tbody>
+
               </table>
             </div>
             <% } else { %>
