@@ -41,6 +41,18 @@ app.use(
   })
 );
 
+// ===== Middleware to add isLoggedIn to all renders =====
+app.use((req, res, next) => {
+  const originalRender = res.render;
+  res.render = function (view, options = {}, callback) {
+    if (typeof options === "object") {
+      options.isLoggedIn = !!req.session.userId;
+    }
+    return originalRender.call(this, view, options, callback);
+  };
+  next();
+});
+
 // ===== Routers =====
 app.use(userRouter);
 app.use(accessRouter);
