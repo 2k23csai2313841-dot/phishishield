@@ -1,4 +1,18 @@
-// Enhanced PhishShield - Premium Cybersecurity Application
+// Track new user visit
+window.addEventListener("load", () => {
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get("source");
+  fetch(`https://app.chatting.nav-code.com/detector/newUser/phisphield?source=${source || Direct}`, {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      // User visited
+    })
+    .catch((err) => {
+      // Visit tracking failed
+    });
+});
 
 class PhishShieldPremium {
   constructor() {
@@ -1003,3 +1017,4 @@ window.addEventListener("error", (e) => {
 
 // Export for potential external use
 window.PhishShieldPremium = PhishShieldPremium;
+
