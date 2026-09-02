@@ -10,7 +10,11 @@ import {requireLogin} from '../controller/requiredController.js'
 userRouter.get('/',  index);
 userRouter.get('/about',about);
 userRouter.get('/feedback', feedback);
-
+userRouter.get('/health',(req,res)=>{
+  return res.status(200).json({
+        status: true
+      });
+})
 
 
 
